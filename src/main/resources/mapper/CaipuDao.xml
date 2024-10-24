@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CaipuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.caipu_name as caipuName
+        ,a.caipu_uuid_number as caipuUuidNumber
+        ,a.caipu_photo as caipuPhoto
+        ,a.caipu_weizhi as caipuWeizhi
+        ,a.caipu_video as caipuVideo
+        ,a.caipu_jiage as caipuJiage
+        ,a.caipu_types as caipuTypes
+        ,a.caipu_kouwei_types as caipuKouweiTypes
+        ,a.caipu_clicknum as caipuClicknum
+        ,a.caipu_content as caipuContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.CaipuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM caipu  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.caipuName != '' and params.caipuName != null and params.caipuName != 'null' ">
+                and a.caipu_name like CONCAT('%',#{params.caipuName},'%')
+            </if>
+            <if test=" params.caipuUuidNumber != '' and params.caipuUuidNumber != null and params.caipuUuidNumber != 'null' ">
+                and a.caipu_uuid_number like CONCAT('%',#{params.caipuUuidNumber},'%')
+            </if>
+            <if test=" params.caipuWeizhi != '' and params.caipuWeizhi != null and params.caipuWeizhi != 'null' ">
+                and a.caipu_weizhi like CONCAT('%',#{params.caipuWeizhi},'%')
+            </if>
+            <if test=" params.caipuVideo != '' and params.caipuVideo != null and params.caipuVideo != 'null' ">
+                and a.caipu_video like CONCAT('%',#{params.caipuVideo},'%')
+            </if>
+            <if test="params.caipuJiageStart != null ">
+                <![CDATA[  and a.caipu_jiage >= #{params.caipuJiageStart}   ]]>
+            </if>
+            <if test="params.caipuJiageEnd != null ">
+                <![CDATA[  and a.caipu_jiage <= #{params.caipuJiageEnd}   ]]>
+            </if>
+            <if test="params.caipuTypes != null and params.caipuTypes != ''">
+                and a.caipu_types = #{params.caipuTypes}
+            </if>
+            <if test="params.caipuKouweiTypes != null and params.caipuKouweiTypes != ''">
+                and a.caipu_kouwei_types = #{params.caipuKouweiTypes}
+            </if>
+            <if test="params.caipuClicknumStart != null and params.caipuClicknumStart != ''">
+                <![CDATA[  and a.caipu_clicknum >= #{params.caipuClicknumStart}   ]]>
+            </if>
+            <if test="params.caipuClicknumEnd != null and params.caipuClicknumEnd != ''">
+                <![CDATA[  and a.caipu_clicknum <= #{params.caipuClicknumEnd}   ]]>
+            </if>
+             <if test="params.caipuClicknum != null and params.caipuClicknum != ''">
+                and a.caipu_clicknum = #{params.caipuClicknum}
+             </if>
+            <if test=" params.caipuContent != '' and params.caipuContent != null and params.caipuContent != 'null' ">
+                and a.caipu_content like CONCAT('%',#{params.caipuContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
